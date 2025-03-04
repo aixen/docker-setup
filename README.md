@@ -13,7 +13,8 @@ Ensure you have the following installed:
 
 ### 1. Clone the Repository
 ```sh
-git clone https://your-repository-url.git
+git clone https://github.com/aixen/docker-setup.git
+
 cd laravel-microservices
 ```
 
@@ -21,6 +22,7 @@ cd laravel-microservices
 Edit your **hosts** file to map domains to localhost:
 ```sh
 sudo nano /etc/hosts   # For macOS/Linux
+
 notepad C:\Windows\System32\drivers\etc\hosts   # For Windows
 ```
 Add the following line:
@@ -46,8 +48,11 @@ This will build and start the following services:
 If Laravel is not installed inside the `app-authentication` container, run:
 ```sh
 docker exec -it app-authentication bash
+
 cd /var/www/authentication
+
 composer create-project --prefer-dist laravel/laravel .
+
 exit
 ```
 
@@ -60,10 +65,10 @@ Then update the database connection settings in `.env`:
 ```
 DB_CONNECTION=mysql
 DB_HOST=mysql_db
-DB_PORT=3306
-DB_DATABASE=auth_db
-DB_USERNAME=root
-DB_PASSWORD=root
+DB_PORT=[db_port]
+DB_DATABASE=[db_name]
+DB_USERNAME=[db_username]
+DB_PASSWORD=[db_password]
 ```
 Run the migrations:
 ```sh
