@@ -36,13 +36,13 @@ Run the following command to start the services:
 ```sh
 docker-compose up -d --build
 ```
-This will build and start the following services:
-- **nginx_gateway** (Nginx Reverse Proxy)
-- **app-authentication** (Laravel Authentication Microservice)
+This will build and start the following services this is all dynamic containers name:
+- **nginx** (Nginx Reverse Proxy)
 - **php_workspace** (PHP Environment)
-- **mysql_db** (MySQL Database)
-- **redis_cache** (Redis for caching)
+- **mysql** (MySQL Database)
+- **redis** (Redis for caching)
 - **redis_ui** (Redis Insight UI for monitoring)
+- **app-authentication** (Laravel Authentication Microservice)
 
 ### 4. Install Laravel in Authentication Service
 If Laravel is not installed inside the `app-authentication` container, run:

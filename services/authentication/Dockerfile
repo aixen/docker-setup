@@ -1,27 +1,16 @@
 FROM php:8.2-fpm
 
-# Install required dependencies
+# Install required system packages
 RUN apt-get update && apt-get install -y \
+    libzip-dev \
     zip \
     unzip \
     git \
     curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    mariadb-client \
+    && docker-php-ext-install pdo pdo_mysql
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www/authentication
 
-# Copy Laravel application
-COPY . /var/www/html
-
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Expose PHP-FPM port
-EXPOSE 9000
-
-# Start PHP-FPM
 CMD ["php-fpm"]

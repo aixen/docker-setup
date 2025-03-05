@@ -7,7 +7,9 @@ services:
       - "80:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./services/authentication:/var/www/authentication
     depends_on:
+      - php
       - app-authentication
 
   php:
@@ -15,9 +17,21 @@ services:
       context: ./php
       dockerfile: Dockerfile
     volumes:
-      - ./:/var/www/html
+      - ./services/authentication:/var/www/authentication
     environment:
       - PHP_VERSION=8.2
+
+  authentication-workspace:
+    build:
+      context: ./authentication-workspace
+      dockerfile: Dockerfile
+    container_name: authentication-workspace
+    volumes:
+      - ./services/authentication:/var/www/authentication
+    working_dir: /var/www/authentication
+    depends_on:
+      - php
+    command: tail -f /dev/null  # Keeps container running for manual commands
 
   mysql:
     image: mysql:8.0
@@ -45,11 +59,11 @@ services:
       dockerfile: Dockerfile
     container_name: app-authentication
     volumes:
-    - ./services/authentication:/var/www/authentication
+      - ./services/authentication:/var/www/authentication
     working_dir: /var/www/authentication
     environment:
       - APP_ENV=local
-      - DB_HOST=mysql_db
+      - DB_HOST=mysql
       - DB_DATABASE=auth_db
       - DB_USERNAME=root
       - DB_PASSWORD=root
@@ -57,4 +71,5 @@ services:
     depends_on:
       - mysql
       - redis
-
+    command: >
+      sh -c "chmod -R 777 storage bootstrap/cache && php-fpm"
