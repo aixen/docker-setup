@@ -23,7 +23,7 @@ services:
 
   authentication-workspace:
     build:
-      context: ./authentication-workspace
+      context: ./services/authentication/workspace
       dockerfile: Dockerfile
     container_name: authentication-workspace
     volumes:
