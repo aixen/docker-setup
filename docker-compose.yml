@@ -7,7 +7,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./services/authentication:/var/www/authentication
+      - ./services/authentication/application:/var/www/authentication
     depends_on:
       - php
       - app-authentication
@@ -17,7 +17,7 @@ services:
       context: ./php
       dockerfile: Dockerfile
     volumes:
-      - ./services/authentication:/var/www/authentication
+      - ./services/authentication/application:/var/www/authentication
     environment:
       - PHP_VERSION=8.2
 
@@ -27,11 +27,11 @@ services:
       dockerfile: Dockerfile
     container_name: authentication-workspace
     volumes:
-      - ./services/authentication:/var/www/authentication
+      - ./services/authentication/application:/var/www/authentication
     working_dir: /var/www/authentication
     depends_on:
       - php
-    command: tail -f /dev/null  # Keeps container running for manual commands
+    command: tail -f /dev/null
 
   mysql:
     image: mysql:8.0
@@ -55,16 +55,16 @@ services:
 
   app-authentication:
     build:
-      context: ./services/authentication
+      context: ./services/authentication/application
       dockerfile: Dockerfile
     container_name: app-authentication
     volumes:
-      - ./services/authentication:/var/www/authentication
+      - ./services/authentication/application:/var/www/authentication
     working_dir: /var/www/authentication
     environment:
       - APP_ENV=local
       - DB_HOST=mysql
-      - DB_DATABASE=auth_db
+      - DB_DATABASE=db_authentication
       - DB_USERNAME=root
       - DB_PASSWORD=root
       - REDIS_HOST=redis
