@@ -21,18 +21,6 @@ services:
     environment:
       - PHP_VERSION=8.2
 
-  authentication-workspace:
-    build:
-      context: ./services/authentication/workspace
-      dockerfile: Dockerfile
-    container_name: authentication-workspace
-    volumes:
-      - ./services/authentication/application:/var/www/authentication
-    working_dir: /var/www/authentication
-    depends_on:
-      - php
-    command: tail -f /dev/null
-
   mysql:
     image: mysql:8.0
     environment:
@@ -52,6 +40,18 @@ services:
       - "8001:8001"
     depends_on:
       - redis
+
+  authentication-workspace:
+    build:
+      context: ./services/authentication/workspace
+      dockerfile: Dockerfile
+    container_name: authentication-workspace
+    volumes:
+      - ./services/authentication/application:/var/www/authentication
+    working_dir: /var/www/authentication
+    depends_on:
+      - php
+    command: tail -f /dev/null
 
   app-authentication:
     build:
