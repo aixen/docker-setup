@@ -12,6 +12,8 @@ services:
     depends_on:
       - php
       - app-authentication
+    networks:
+      - mynetwork
 
   php:
     build:
@@ -22,19 +24,24 @@ services:
       - ./services/gateway/application:/var/www/gateway
     environment:
       - PHP_VERSION=8.2
+    networks:
+      - mynetwork
 
   mysql:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      # MYSQL_DATABASE: auth_db
     ports:
       - "3306:3306"
+    networks:
+      - mynetwork
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+    networks:
+      - mynetwork
 
   redis_ui:
     image: redislabs/redisinsight:latest
@@ -42,6 +49,8 @@ services:
       - "8001:8001"
     depends_on:
       - redis
+    networks:
+      - mynetwork
 
 # microservices setup
 
@@ -56,6 +65,8 @@ services:
     depends_on:
       - php
     command: tail -f /dev/null
+    networks:
+      - mynetwork
 
   app-gateway:
     build:
@@ -71,8 +82,11 @@ services:
     depends_on:
       - mysql
       - redis
+      - authentication-nginx
     command: >
       sh -c "chmod -R 777 storage bootstrap/cache && php-fpm"
+    networks:
+      - mynetwork
 
   authentication-workspace:
     build:
@@ -85,6 +99,8 @@ services:
     depends_on:
       - php
     command: tail -f /dev/null
+    networks:
+      - mynetwork
 
   app-authentication:
     build:
@@ -101,3 +117,22 @@ services:
       - redis
     command: >
       sh -c "chmod -R 777 storage bootstrap/cache && php-fpm"
+    networks:
+      - mynetwork
+
+  authentication-nginx:
+    image: nginx:latest
+    container_name: authentication-nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/auth.conf:/etc/nginx/conf.d/default.conf
+      - ./services/authentication/application:/var/www/authentication
+    depends_on:
+      - app-authentication
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
