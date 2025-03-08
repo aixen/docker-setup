@@ -7,7 +7,21 @@ Ensure you have the following installed:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - [Git](https://git-scm.com/downloads)
 - [Composer](https://getcomposer.org/)
+- [Postman](https://www.postman.com/)
 - [MySQL Workbench](https://www.mysql.com/products/workbench/)
+- [Another Redis Desktop Manager](https://goanother.com/)
+
+## Requirements
+- PHP 8.2 or Up
+  - Laravel 12
+  - Redis
+- MySQL 8.4
+- VueJs 3
+  - Pinia 3.0
+  - Vue-Router 4.5
+  - Bootstrap 5
+- Node v22.14.0
+- NPM 10.9.2
 
 ## Installation and Setup
 
@@ -27,6 +41,7 @@ notepad C:\Windows\System32\drivers\etc\hosts   # For Windows
 ```
 Add the following line:
 ```
+127.0.0.1 gateway.local
 127.0.0.1 auth.local
 ```
 Save and close the file.
@@ -41,61 +56,31 @@ This will build and start the following services this is all dynamic containers 
 - **php_workspace** (PHP Environment)
 - **mysql** (MySQL Database)
 - **redis** (Redis for caching)
-- **redis_ui** (Redis Insight UI for monitoring)
+- **app-gateway** (Laravel Gateway Microservice)
 - **app-authentication** (Laravel Authentication Microservice)
 
-### 4. Install Laravel in Authentication Service
-If Laravel is not installed inside the `app-authentication` container, run:
-```sh
-docker exec -it app-authentication bash
-
-cd /var/www/authentication
-
-composer create-project --prefer-dist laravel/laravel .
-
-exit
-```
-
-### 5. Set Up Environment Variables
-Copy the Laravel environment file:
-```sh
-docker exec -it app-authentication cp /var/www/authentication/.env.example /var/www/authentication/.env
-```
-Then update the database connection settings in `.env`:
-```
-DB_CONNECTION=mysql
-DB_HOST=mysql_db
-DB_PORT=[db_port]
-DB_DATABASE=[db_name]
-DB_USERNAME=[db_username]
-DB_PASSWORD=[db_password]
-```
-Run the migrations:
-```sh
-docker exec -it app-authentication php artisan migrate
-```
-
-### 6. Access the Services
+### 4. Access the Services
+- Laravel Gateway Microservice: [http://gateway.local](http://gateway.local)
 - Laravel Authentication Microservice: [http://auth.local](http://auth.local)
 - MySQL Database: Use `mysql_db`, username `root`, password `root` (via MySQL Workbench)
-- Redis Insight UI: [http://localhost:8001](http://localhost:8001)
 
-### 7. Stop Containers
+### 5. Stop Containers
 To stop all running containers:
 ```sh
 docker-compose down
 ```
 
-### 8. Additional Commands
+### 6. Additional Commands
 - View running containers:
   ```sh
-  docker ps
+  docker ps -a
   ```
-- Restart a container:
+- Rebuild container:
   ```sh
-  docker-compose restart app-authentication
+  docker-compose up -d --build
   ```
-- Enter a container:
+- Enter a container workspace per service:
   ```sh
-  docker exec -it app-authentication bash
+  docker exec -it gateway-workspace bash
+  docker exec -it authentication-workspace bash
   ```
